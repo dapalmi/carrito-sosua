@@ -1,0 +1,50 @@
+﻿@model CarritoSosua.Models.Turno
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Turno</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Localidad.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Localidad.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DayOfWeek)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DayOfWeek)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TimeFrom)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TimeFrom)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TimeTo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TimeTo)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

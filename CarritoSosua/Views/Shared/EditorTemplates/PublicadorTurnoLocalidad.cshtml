@@ -1,0 +1,27 @@
+﻿@using CarritoSosua.ExtensionMethods
+@model CarritoSosua.Models.PublicadorTurnoLocalidad
+<tr>
+    <td>@Model.Day.Month.MonthToCurrentCultureString()</td>
+</tr>
+<tr>
+    <td>
+        @Html.HiddenFor(m => m.Id)
+        @Html.HiddenFor(m => m.PublicadorId)
+        @Html.HiddenFor(m => m.LocalidadId)
+        @Html.HiddenFor(m => m.TurnoId)
+        @Html.HiddenFor(m => m.Day)
+        @Html.DisplayFor(m => m.Day)
+    </td>
+    <td>
+        @Model.Turno.DayOfWeek.ToCurrentCultureString()
+    </td>
+    <td>
+        @Html.DisplayFor(m => m.Turno.TimeFrom)
+    </td>
+    <td>
+        @Html.DisplayFor(m => m.Turno.TimeTo)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Disponible, new { htmlAttributes = new { @class = "form-control" } })
+    </td>
+</tr>

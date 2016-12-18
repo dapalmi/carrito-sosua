@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewBag.Title = "Export";
+}
+
+<h2>Export</h2>
+
+@using (Html.BeginForm("ExportData", "Export"))
+{
+    <table class="table">
+        <tr>
+            <th>Mez</th>
+        </tr>
+        <tr>
+            <td>@Html.DropDownList("MonthList", null, htmlAttributes: new {@class = "form-control"}, optionLabel: "Por favor seleccione uno")</td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit" name="Export" id="Export" value="Export" class="btn btn-default" />
+            </td>
+        </tr>
+    </table>
+}

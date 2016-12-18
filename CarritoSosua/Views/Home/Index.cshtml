@@ -1,0 +1,134 @@
+﻿@using CarritoSosua.ExtensionMethods
+@model IEnumerable<CarritoSosua.Models.PublicadorTurno>
+
+@{
+    ViewBag.Title = "Horarios";
+}
+
+<h2>Horarios</h2>
+
+@using (Html.BeginForm("List", "Home", FormMethod.Get, new { id = "SelectForm" }))
+{
+    <table class="table">
+        <tr>
+            <th>Puesto</th>
+            <th>Semana</th>
+        </tr>
+        <tr>
+            <td>@Html.DropDownList("LocalidadId", null, htmlAttributes: new { @class = "form-control", onchange = "SelectionChanged(this)" }, optionLabel: "Por favor seleccione uno")</td>
+            <td>@Html.DropDownList("Semanas", null, htmlAttributes: new { @class = "form-control", onchange = "SelectionChanged(this)" }, optionLabel: "Por favor seleccione uno")</td>
+        </tr>
+    </table>
+    @*<input type="submit" value="Ok" class="btn btn-default" />*@
+}
+
+<br/>
+<div>
+    <h3 class="validationError" id="AjaxError"></h3>
+</div>
+<br />
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <tr>
+            <th></th>
+            @foreach (var day in (List<String>) ViewBag.Week)
+            {
+                <th>@Html.Raw(day)</th>
+            }
+        </tr>
+
+        @{
+            var formCount = 0;
+            foreach (var turno in (List<String>) ViewBag.Turnos)
+            {
+                <tr>
+                    <td>@Html.Raw(turno)</td>
+                    @foreach (var day in (List<String>) ViewBag.Week)
+                    {
+                        <td>
+                            @{
+                        var publicadores = Model.Where(x => (x.Day.DayOfWeek.ToSpanishDayOfWeekName() + " " + x.Day.ToString("dd\\/MM\\/yyyy")) == day && (x.Turno.TimeFrom.ToShortTimeString() + " - " + x.Turno.TimeTo.ToShortTimeString()) == turno);
+                                var maxPublicadores = 2;
+                                foreach (var publicador in publicadores)
+                                {
+                                    if (publicador.Publicador != null)
+                                    {
+                                        @Html.Raw(publicador.Publicador.Name)
+                                        @Html.Raw(" - ")
+                                        @Html.ActionLink("Borrar", "Delete", new { firstDay = (string)ViewBag.FirstDay, day = day, localidad = ViewBag.SelectedLocalidad, turno = turno, publicadorId = publicador.PublicadorId.ToString() }, new { onclick = "return confirm('Seguro que quieres borrar esta entrada?');" })
+                                        <br/>
+                                        maxPublicadores -= 1;
+                                    }
+                                }
+                                if (maxPublicadores > 0)
+                                {
+                                    var ptl = Model.FirstOrDefault(x => (x.Day.DayOfWeek.ToSpanishDayOfWeekName() + " " + x.Day.ToString("dd\\/MM\\/yyyy")) == day && (x.Turno.TimeFrom.ToShortTimeString() + " - " + x.Turno.TimeTo.ToShortTimeString()) == turno);
+                                    if (ptl == null)
+                                    {
+                                        <div style="text-align: center">@Html.Raw("-")</div>
+                                    }
+                                    else
+                                    {
+                                        using (Ajax.BeginForm("Save", null, new AjaxOptions { OnSuccess = "onSuccess" }, new { id = "PublicadorForm" + formCount }))
+                                        {
+                                            @Html.Hidden("firstDay", (string) ViewBag.FirstDay)
+                                            @Html.Hidden("day", day)
+                                            @Html.Hidden("localidad", (string) ViewBag.SelectedLocalidad)
+                                            @Html.Hidden("turno", turno)
+                                            <div>
+                                                @Html.DropDownList("PublicadorId", null, htmlAttributes: new
+                                                {
+                                                    @class = "form-control",
+                                                    onchange = "PublicadorChanged(this)"
+                                                },
+                                                    optionLabel: String.Empty)
+                                            </div>
+                                        }
+                                        formCount += 1;
+                                    }
+                                }
+                            }
+                        </td>
+                    }
+
+                </tr>
+            }
+        }
+
+
+    </table>
+}
+
+<script>
+
+    function SelectionChanged() {
+        if ($("#LocalidadId").val() && $("#Semanas").val()) {
+            $("#SelectForm").submit();
+        }
+    }
+
+    function PublicadorChanged() {
+        $("[id^='PublicadorForm']").submit();
+    }
+
+    function onError() {
+        $('#AjaxError').html('Error');
+    }
+
+    function onSuccess(response) {
+        if (response.errorOccurred) {
+            $('#AjaxError').html(response.errorMessage);
+        }
+        else if (response.firstDay != null && response.localidadId != null) {
+            var url = "@Url.Action("List")" + "?LocalidadId=" + response.localidadId +
+                "&Semanas=" + response.firstDay;
+            window.location.href = url.replace('#localidadId', response.localidadId).replace('#semanas', response.firstDay);
+        }
+        else
+        {
+            onError();
+        }
+    }
+</script>
